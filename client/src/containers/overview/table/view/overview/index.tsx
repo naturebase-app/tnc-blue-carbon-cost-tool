@@ -124,6 +124,13 @@ export function OverviewTable() {
     },
   );
 
+  const tableData = useMemo(() => {
+    const priceType = filters.priceType;
+    return isSuccess
+      ? data.data.map((project) => ({ ...project, priceType }))
+      : NO_DATA;
+  }, [isSuccess, data?.data, filters.priceType]);
+
   const visibleProjectIds = useMemo(() => getVisibleProjectIds(data), [data]);
 
   const maximums = useMemo(
@@ -147,7 +154,7 @@ export function OverviewTable() {
 
   const table = useReactTable<PaginatedProjectsWithMaximums["data"][0]>({
     ...DEFAULT_TABLE_SETTINGS,
-    data: isSuccess ? data.data : NO_DATA,
+    data: tableData,
     columns: columnsBasedOnFilters,
     getCoreRowModel: getCoreRowModel(),
     state: {
