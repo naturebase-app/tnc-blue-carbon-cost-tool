@@ -128,7 +128,7 @@ const Graph: FC<GraphProps> = ({ total, leftover, segments }) => {
             </div>
           </div>
           <div className="flex h-full w-full flex-col gap-1 rounded-md">
-            {leftover >= 0 && (
+            {leftover > 0 && (
               <LeftOverGraph
                 leftover={leftover}
                 leftoverHeight={leftoverHeight}
@@ -310,7 +310,7 @@ const GraphWithLegend: FC<GraphWithLegendProps> = ({
 }) => {
   const graphLegendItems = useMemo(() => {
     return [
-      ...(leftover
+      ...(typeof leftover === "number"
         ? [
             {
               label: "Net revenue",
@@ -342,7 +342,7 @@ const GraphWithLegend: FC<GraphWithLegendProps> = ({
   return (
     <div className="flex flex-col gap-2">
       <span className="text-xl font-normal">
-        <Currency value={leftover || total} />
+        <Currency value={leftover ?? total} />
       </span>
       <div className="flex justify-between gap-4">
         <div className="flex flex-col justify-end">

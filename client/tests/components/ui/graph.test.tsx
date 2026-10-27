@@ -45,6 +45,34 @@ describe("GraphWithLegend", () => {
     expect(opExAmount.previousSibling).toHaveTextContent("$");
   });
 
+  it("keeps revenue and cost bars aligned when net revenue is zero", () => {
+    const { container } = render(
+      <GraphWithLegend
+        total={2_300_000}
+        leftover={0}
+        items={[
+          {
+            value: 2_300_000,
+            label: "OpEx",
+            circleClassName: "bg-sky-blue-200",
+            labelClassName: "text-sky-blue-200",
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("0", { exact: true })).toBeInTheDocument();
+    expect(container.querySelectorAll(".border-dashed")).toHaveLength(1);
+
+    const barHeights = Array.from(
+      container.querySelectorAll<HTMLElement>("[style]"),
+    )
+      .map((element) => element.style.height)
+      .filter(Boolean);
+
+    expect(barHeights).toEqual(["100%", "100%"]);
+  });
+
   it.each([
     { total: 0, leftover: 0, segmentValue: 0 },
     { total: 0.00000000001, leftover: -0.00000000001, segmentValue: -1 },
