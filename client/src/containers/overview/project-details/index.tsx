@@ -15,7 +15,6 @@ import AbatementPotential from "@/containers/overview/project-details/abatement-
 import ProjectDetailsCost from "@/containers/overview/project-details/cost";
 import CostEstimates from "@/containers/overview/project-details/cost-estimates";
 import Footer from "@/containers/overview/project-details/footer";
-import ProjectDetailsLeftover from "@/containers/overview/project-details/left-over";
 import Navigation from "@/containers/overview/project-details/navigation";
 import ProjectDetailsOffsetPrice from "@/containers/overview/project-details/offset-price";
 import ParametersProjects from "@/containers/overview/project-details/parameters";
@@ -64,12 +63,6 @@ export default function ProjectDetails() {
     () => getProjectSizeLabel(projectData),
     [projectData],
   );
-  const leftoverAfterOpex = useMemo(() => {
-    if (costRangeSelector === "total") {
-      return projectData?.leftoverAfterOpex;
-    }
-    return projectData?.leftoverAfterOpexNPV;
-  }, [costRangeSelector, projectData]);
 
   const handleOpenDetails = (open: boolean) =>
     setProjectDetails({ ...projectDetails, isOpen: open });
@@ -95,20 +88,13 @@ export default function ProjectDetails() {
               </Card>
 
               <Card variant="secondary" className="flex flex-col gap-4 p-4">
-                <ProjectDetailsLeftover
+                <ProjectDetailsOffsetPrice
                   data={projectData?.projectCost}
-                  leftoverAfterOpex={leftoverAfterOpex}
+                  creditsIssued={projectData?.creditsIssued}
+                  priceType={projectData?.priceType}
                 />
               </Card>
             </div>
-
-            <Card variant="secondary" className="p-4">
-              <ProjectDetailsOffsetPrice
-                data={projectData?.projectCost}
-                creditsIssued={projectData?.creditsIssued}
-                priceType={projectData?.priceType}
-              />
-            </Card>
 
             <div className="flex gap-4">
               <Card variant="secondary" className="w-3/4 p-4">
