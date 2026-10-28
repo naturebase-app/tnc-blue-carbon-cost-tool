@@ -79,6 +79,21 @@ describe("projects/custom-projects/details/project-details", () => {
     checkDefaultProps();
   });
 
+  it("renders total credit generation when provided", () => {
+    render(
+      <ProjectDetails
+        data={{ ...defaultProps.data, totalCreditsIssued: 717556.226 }}
+      />,
+    );
+
+    const totalCreditGeneration = screen.getByRole("heading", {
+      name: "Total credit generation",
+    });
+    expect(totalCreditGeneration.nextSibling).toHaveTextContent(
+      "717,556.226tCO2e",
+    );
+  });
+
   it("renders default values + any optional data when provided", () => {
     const data = {
       ...defaultProps.data,

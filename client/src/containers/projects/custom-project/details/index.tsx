@@ -56,6 +56,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
     emissionFactors,
     restorationActivity,
     sequestrationRate,
+    totalCreditsIssued,
   } = data;
   const idAtom = useAtomValue(customProjectIdAtom);
   const { id } = useParams();
@@ -160,6 +161,13 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
               label="Sequestration rate"
               value={sequestrationRate}
               unit="tCO2e/ha/yr"
+            />
+          )}
+          {typeof totalCreditsIssued === "number" && (
+            <DetailItem
+              label="Total credit generation"
+              value={totalCreditsIssued}
+              unit="tCO2e"
             />
           )}
         </div>
