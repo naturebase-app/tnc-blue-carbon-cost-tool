@@ -91,6 +91,13 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
             label="Carbon revenues to cover"
             value={carbonRevenuesToCover}
           />
+          {typeof totalCreditsIssued === "number" && (
+            <DetailItem
+              label="Total credit generation"
+              value={totalCreditsIssued}
+              unit="tCO2e"
+            />
+          )}
         </div>
         <div className="space-y-3">
           <DetailItem
@@ -162,13 +169,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ data }) => {
               label="Sequestration rate"
               value={sequestrationRate}
               unit="tCO2e/ha/yr"
-            />
-          )}
-          {typeof totalCreditsIssued === "number" && (
-            <DetailItem
-              label="Total credit generation"
-              value={totalCreditsIssued}
-              unit="tCO2e"
             />
           )}
         </div>
