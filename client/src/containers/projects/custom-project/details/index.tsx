@@ -40,6 +40,7 @@ export interface ProjectDetailsProps {
     } | null;
     restorationActivity?: RESTORATION_ACTIVITY_SUBTYPE;
     sequestrationRate?: number | null;
+    totalCreditsIssued?: number;
   };
 }
 
