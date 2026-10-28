@@ -21,6 +21,15 @@ interface GraphSegment {
 }
 
 const NEAR_ZERO = 1e-9;
+const compactCurrencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const isDisplayedAsZero = (value: number) =>
+  compactCurrencyFormatter.format(Math.abs(value)) ===
+  compactCurrencyFormatter.format(0);
 const getPercentage = (value: number, total: number) => {
   if (
     !Number.isFinite(value) ||
@@ -85,21 +94,22 @@ const LeftOverGraph: FC<LeftOverGraphProps> = ({
  */
 const Graph: FC<GraphProps> = ({ total, leftover, segments }) => {
   if (typeof leftover === "number") {
+    const layoutLeftover = isDisplayedAsZero(leftover) ? 0 : leftover;
     // Calculate heights for split mode visualization
     const {
       totalRevenueHeight,
       leftoverHeight,
       leftoverMinHeight,
       totalRevenueMinHeight,
-    } = calculateSplitModeHeights(total, leftover);
+    } = calculateSplitModeHeights(total, layoutLeftover);
 
     return (
       <div className="relative h-40 w-full max-w-[280px] overflow-hidden rounded-md">
         <div className="absolute bottom-0 top-0 flex h-full w-full flex-row gap-1 rounded-md">
           <div className="flex h-full w-full min-w-0 flex-col gap-1">
-            {leftover < 0 && (
+            {layoutLeftover < 0 && (
               <LeftOverGraph
-                leftover={leftover}
+                leftover={layoutLeftover}
                 leftoverHeight={leftoverHeight}
                 minHeight={leftoverMinHeight}
               />
@@ -128,9 +138,9 @@ const Graph: FC<GraphProps> = ({ total, leftover, segments }) => {
             </div>
           </div>
           <div className="flex h-full w-full flex-col gap-1 rounded-md">
-            {leftover > 0 && (
+            {layoutLeftover > 0 && (
               <LeftOverGraph
-                leftover={leftover}
+                leftover={layoutLeftover}
                 leftoverHeight={leftoverHeight}
                 minHeight={leftoverMinHeight}
               />

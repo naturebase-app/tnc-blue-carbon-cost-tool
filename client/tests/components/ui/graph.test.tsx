@@ -45,33 +45,36 @@ describe("GraphWithLegend", () => {
     expect(opExAmount.previousSibling).toHaveTextContent("$");
   });
 
-  it("keeps revenue and cost bars aligned when net revenue is zero", () => {
-    const { container } = render(
-      <GraphWithLegend
-        total={2_300_000}
-        leftover={0}
-        items={[
-          {
-            value: 2_300_000,
-            label: "OpEx",
-            circleClassName: "bg-sky-blue-200",
-            labelClassName: "text-sky-blue-200",
-          },
-        ]}
-      />,
-    );
+  it.each([0, 0.01, -0.01])(
+    "keeps revenue and cost bars aligned when net revenue %s displays as zero",
+    (leftover) => {
+      const { container } = render(
+        <GraphWithLegend
+          total={2_300_000}
+          leftover={leftover}
+          items={[
+            {
+              value: 2_300_000,
+              label: "OpEx",
+              circleClassName: "bg-sky-blue-200",
+              labelClassName: "text-sky-blue-200",
+            },
+          ]}
+        />,
+      );
 
-    expect(screen.getByText("0", { exact: true })).toBeInTheDocument();
-    expect(container.querySelectorAll(".border-dashed")).toHaveLength(1);
+      expect(screen.getByText("0", { exact: true })).toBeInTheDocument();
+      expect(container.querySelectorAll(".border-dashed")).toHaveLength(1);
 
-    const barHeights = Array.from(
-      container.querySelectorAll<HTMLElement>("[style]"),
-    )
-      .map((element) => element.style.height)
-      .filter(Boolean);
+      const barHeights = Array.from(
+        container.querySelectorAll<HTMLElement>("[style]"),
+      )
+        .map((element) => element.style.height)
+        .filter(Boolean);
 
-    expect(barHeights).toEqual(["100%", "100%"]);
-  });
+      expect(barHeights).toEqual(["100%", "100%"]);
+    },
+  );
 
   it.each([
     { total: 0, leftover: 0, segmentValue: 0 },
