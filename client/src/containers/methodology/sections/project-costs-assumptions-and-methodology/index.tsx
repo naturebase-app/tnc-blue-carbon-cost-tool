@@ -96,14 +96,13 @@ const ProjectCostsAssumptionsAndMethodology: MethodologySection = {
             rebuilding small portions.
           </li>
           <li>
-            <strong>Landowner/community benefit share:</strong> Approximated as
-            a percent (%) of the carbon credit revenues for the
-            landowner/community residing where the project takes place. Best
-            practice is to use the benefit share to meet the community&apos;s
-            socio-economic and financial priorities, per the benefit sharing
-            agreement. This benefit share may be used to compensate for
-            alternative livelihoods and/or opportunity cost, which can be
-            realized through goods, services, infrastructure, and/or cash.
+            <strong>Landowner/community benefit share:</strong> Each active
+            year, 10% of carbon revenue is included in OPEX. When revenue is at
+            least OPEX including this 10% share, an additional 50% of profit
+            (revenue minus other OPEX) is allocated to the landowner/community.
+            The combined share can reach 60% when other OPEX is zero. Benefits
+            may support the community&apos;s priorities through goods, services,
+            infrastructure, or cash.
           </li>
           <li>
             <strong>Baseline reassessment:</strong> The costs associated with a

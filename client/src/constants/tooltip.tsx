@@ -48,7 +48,7 @@ export const KEY_COSTS = {
   IMPLEMENTATION_LABOR:
     "Only applicable to restoration. The costs associated with labor and materials required for rehabilitating the degraded area (hydrology, planting or hybrid).",
   COMMUNITY_BENEFIT_SHARING_FUND:
-    "Approximated as a percent (%) of the carbon credit revenues for the landowner/community residing where the project takes place. Best practice is to use the benefit share to meet the community's socio-economic and financial priorities, per the benefit sharing agreement. This benefit share may be used to compensate for alternative livelihoods and/or opportunity cost, which can be realized through goods, services, infrastructure, and/or cash.",
+    "Each active year, 10% of carbon revenue is included in OPEX. When revenue is at least OPEX including this 10% share, an additional 50% of profit (revenue minus other OPEX) is allocated to the landowner/community. The combined share can reach 60% when other OPEX is zero.",
   MONITORING_AND_MAINTENANCE: (
     <>
       <ul className="space-y-2">
@@ -312,9 +312,10 @@ export const PROJECT_DETAILS = {
             control and repairing damaged areas.
           </li>
           <li>
-            Landowner/Community Benefit Share: Share of revenues to support
-            alternative livelihoods or community priorities, such as
-            infrastructure or goods.
+            Landowner/Community Benefit Share: 10% of annual carbon revenue is
+            included in OPEX. An additional 50% of profit (revenue minus other
+            OPEX) applies when revenue is at least OPEX including that 10%
+            share.
           </li>
           <li>
             Baseline Reassessment: Periodic third-party evaluations of GHG
@@ -735,7 +736,7 @@ export const PROJECT_SUMMARY: Record<keyof CustomProjectSummary, string> = {
   "Funding gap per tCO2e (NPV)":
     "The gap for NPV to cover OPEX or OPEX + CAPEX, depending on which parameter is chosen, divided by tCO2e.",
   "Landowner/community benefit share":
-    "The USD($) allocated to landowner/community, as dictated by the default or assigned percentage.",
+    "The discounted share of annual revenue allocated to the landowner/community: 10% base, plus 50% of profit in years when revenue covers OPEX including the 10% share.",
   "Net revenue after OPEX":
     "Net revenue from sale of carbon credits at indicated price/ton, after accounting for OPEX.",
   "Net revenue after Total cost": "TODO",
@@ -812,9 +813,9 @@ export const COST_DETAILS = (
           (if applicable, e.g., in restoration projects).
         </li>
         <li>
-          Landowner/Community Benefit Share: A percentage of the project
-          revenues allocated for community benefits, such as infrastructure,
-          goods, or cash.
+          Landowner/Community Benefit Share: 10% of annual carbon revenue is
+          included in OPEX. An additional 50% of profit (revenue minus other
+          OPEX) applies when revenue is at least OPEX including that 10% share.
         </li>
         <li>
           Carbon Standard Fees: Administrative fees associated with carbon
