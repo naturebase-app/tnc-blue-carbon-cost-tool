@@ -8,6 +8,7 @@ export const Components = {
     'FileIngestion',
     './pages/file-ingestion/page',
   ),
+  EmailUsers: componentLoader.add('EmailUsers', './pages/email-users/page'),
   Many2ManySources: componentLoader.add(
     'Many2ManySources',
     './molecules/many-2-many-sources',

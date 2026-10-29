@@ -7,6 +7,13 @@ import { z } from "zod";
 
 const contract = initContract();
 export const adminContract = contract.router({
+  listUserEmails: {
+    method: "GET",
+    path: "/admin/users/emails",
+    responses: {
+      200: contract.type<{ data: string[] }>(),
+    },
+  },
   addUser: {
     method: "POST",
     path: "/admin/users",

@@ -42,4 +42,24 @@ export class UsersService extends AppBaseService<
     const user = await this.userRepository.findOneBy({ id });
     return user.isActive;
   }
+
+  async listActiveUserEmails(): Promise<string[]> {
+    const users = await this.userRepository.find({
+      select: { email: true },
+      where: { isActive: true },
+      order: { email: 'ASC' },
+    });
+    const seenEmails = new Set<string>();
+
+    return users.flatMap(({ email }) => {
+      const trimmedEmail = email.trim();
+      const normalizedEmail = trimmedEmail.toLowerCase();
+      if (!normalizedEmail || seenEmails.has(normalizedEmail)) {
+        return [];
+      }
+
+      seenEmails.add(normalizedEmail);
+      return [trimmedEmail];
+    });
+  }
 }
