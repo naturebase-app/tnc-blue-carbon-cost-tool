@@ -149,6 +149,13 @@ const start = async () => {
           });
         },
       },
+      'email-users': {
+        icon: 'Mail',
+        component: Components.EmailUsers,
+        handler: async (_request: Request, response: Response) => {
+          response.json({ config: { apiUrl: API_URL } });
+        },
+      },
     },
     locale: {
       debug: false,

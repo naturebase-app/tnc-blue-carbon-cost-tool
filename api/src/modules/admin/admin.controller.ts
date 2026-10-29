@@ -1,4 +1,11 @@
-import { Controller, Get, Headers, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Headers,
+  HttpStatus,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { RolesGuard } from '@api/modules/auth/guards/roles.guard';
 import { RequiredRoles } from '@api/modules/auth/decorators/roles.decorator';
@@ -9,6 +16,7 @@ import { AuthenticationService } from '@api/modules/auth/authentication.service'
 import { ROLES } from '@shared/entities/users/roles.enum';
 import { JwtCookieAuthGuard } from '@api/modules/auth/guards/jwt-cookie-auth.guard';
 import { AdminExportService } from '@api/modules/admin/admin-export.service';
+import { UsersService } from '@api/modules/users/users.service';
 
 @Controller()
 @UseGuards(JwtCookieAuthGuard, RolesGuard)
@@ -17,6 +25,7 @@ export class AdminController {
   constructor(
     private readonly auth: AuthenticationService,
     private readonly adminExport: AdminExportService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Get('admin/export/xlsx')
@@ -31,6 +40,17 @@ export class AdminController {
       'Content-Length': String(workbook.length),
     });
     response.send(workbook);
+  }
+
+  @TsRestHandler(adminContract.listUserEmails)
+  async listUserEmails(): Promise<ControllerResponse> {
+    return tsRestHandler(adminContract.listUserEmails, async () => {
+      const emails = await this.usersService.listActiveUserEmails();
+      return {
+        status: HttpStatus.OK,
+        body: { data: emails },
+      };
+    });
   }
 
   @TsRestHandler(adminContract.addUser)
