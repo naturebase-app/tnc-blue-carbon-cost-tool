@@ -761,8 +761,7 @@ export class CostCalculator {
   }
 
   communityBenefitAndSharingCosts(): CostPlanMap {
-    const baseCost: number =
-      this.projectInput.costAndCarbonInputs.communityBenefitSharingFund;
+    const communityBenefitRate = 0.1;
 
     const communityBenefitSharingFundCostPlan: CostPlanMap = {};
 
@@ -778,12 +777,31 @@ export class CostCalculator {
 
     const estimatedRevenue: CostPlanMap =
       this.revenueProfitCalculator.calculateEstimatedRevenuePlan();
+    const otherOpexPlans = [
+      this.costPlans.monitoring,
+      this.costPlans.maintenance,
+      this.costPlans.carbonStandardFees,
+      this.costPlans.baselineReassessment,
+      this.costPlans.mrv,
+      this.costPlans.longTermProjectOperatingCost,
+    ];
 
     for (const yearStr in communityBenefitSharingFundCostPlan) {
       const year = Number(yearStr);
       if (year <= this.projectInput.assumptions.projectLength) {
+        const revenue = estimatedRevenue[year] || 0;
+        const baseBenefitShare = revenue * communityBenefitRate;
+        const otherOpex = otherOpexPlans.reduce(
+          (total, plan) => total + (plan[year] || 0),
+          0,
+        );
+        const profitShare =
+          revenue >= otherOpex + baseBenefitShare
+            ? Math.max(revenue - otherOpex, 0) * 0.5
+            : 0;
+
         communityBenefitSharingFundCostPlan[year] =
-          estimatedRevenue[year] * baseCost;
+          baseBenefitShare + profitShare;
       } else {
         communityBenefitSharingFundCostPlan[year] = 0;
       }
@@ -1109,14 +1127,16 @@ export class CostCalculator {
       implementationLabor: this.implementationLaborCosts(),
       monitoring: this.calculateMonitoringCosts(),
       maintenance: this.maintenanceCosts(),
-      communityBenefitSharingFund: this.communityBenefitAndSharingCosts(),
       carbonStandardFees: this.carbonStandardFeeCosts(),
       baselineReassessment: this.baseLineReassessmentCosts(),
       mrv: this.mrvCosts(),
       longTermProjectOperatingCost: this.longTermProjectOperatingCosts(),
+      communityBenefitSharingFund: {},
       opexTotalCostPlan: this.opexTotalCostPlan,
       capexTotalCostPlan: this.capexTotalCostPlan,
     };
+    this.costPlans.communityBenefitSharingFund =
+      this.communityBenefitAndSharingCosts();
     return this;
   }
 }

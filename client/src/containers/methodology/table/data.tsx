@@ -244,7 +244,12 @@ export const projectCostsAssumptionsAndMethodologyData = {
       costComponent: (
         <p className="font-bold">Landowner/community benefit share</p>
       ),
-      costAssumption: <p>Percentage of carbon credit revenues</p>,
+      costAssumption: (
+        <p>
+          10% of annual revenue; plus 50% of profit when revenue covers OPEX
+          including the 10% share
+        </p>
+      ),
       duration: "Each year with carbon credit revenues",
       whatDrivesTheCost: (
         <List>

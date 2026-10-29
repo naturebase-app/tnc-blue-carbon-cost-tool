@@ -166,20 +166,27 @@ class CostCalculator:
         Calculate the total operating expenditure (OPEX) for the project.
         This includes various cost functions that are aggregated into a single plan.
         """
-        # List of cost functions to call
         cost_functions = [
             self.calculate_monitoring,
             self.calculate_maintenance,
-            self.calculate_cummunity_benefit_sharing_fund,
             self.calculate_carbon_standard_fees,
             self.calculate_baseline_reassessment,
             self.calculate_mrv,
             self.calculate_long_term_project_operating_cost,
         ]
 
+        other_opex_total_cost_plan = {
+            year: 0 for year in range(-4, self.project.default_project_length + 1) if year != 0
+        }
         for cost_func in cost_functions:
             cost_plan = cost_func()
-            aggregate_costs(cost_plan, self.opex_total_cost_plan)
+            aggregate_costs(cost_plan, other_opex_total_cost_plan)
+
+        self.other_opex_total_cost_plan = other_opex_total_cost_plan
+        self.opex_total_cost_plan = dict(other_opex_total_cost_plan)
+        aggregate_costs(
+            self.calculate_cummunity_benefit_sharing_fund(), self.opex_total_cost_plan
+        )
 
         return self.opex_total_cost_plan
 
@@ -418,17 +425,24 @@ class CostCalculator:
 
     def calculate_cummunity_benefit_sharing_fund(self):
         "OPEX function to calculate the community benefit sharing fund cost."
-        base_cost = self.project.community_benefit_sharing_fund
-        # Compute community benefit sharing fund cost plan
+        community_benefit_rate = 0.1
         community_benefit_sharing_fund_cost_plan = {
             year: 0 for year in range(-4, self.project.default_project_length + 1) if year != 0
         }
         estimated_revenue = self.revenue_profit_calculator.calculate_est_revenue()
         for year, _ in community_benefit_sharing_fund_cost_plan.items():
             if year <= self.project_length:
-                community_benefit_sharing_fund_cost_plan[year] = float(
-                    estimated_revenue[year]
-                ) * float(base_cost)
+                revenue = float(estimated_revenue.get(year, 0))
+                base_benefit_share = revenue * community_benefit_rate
+                other_opex = self.other_opex_total_cost_plan.get(year, 0)
+                profit_share = (
+                    max(revenue - other_opex, 0) * 0.5
+                    if revenue >= other_opex + base_benefit_share
+                    else 0
+                )
+                community_benefit_sharing_fund_cost_plan[year] = (
+                    base_benefit_share + profit_share
+                )
             else:
                 community_benefit_sharing_fund_cost_plan[year] = 0
         return community_benefit_sharing_fund_cost_plan
