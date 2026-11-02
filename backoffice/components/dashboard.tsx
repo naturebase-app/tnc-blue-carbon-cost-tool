@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, H1, Text } from '@adminjs/design-system';
+import { Box, H1, Text } from '@adminjs/design-system';
 
 const Dashboard = () => {
   return (
@@ -14,14 +14,6 @@ const Dashboard = () => {
       >
         <H1>Welcome to Blue Carbon Cost Admin Panel</H1>
         <Text>Manage your data effectively and efficiently</Text>
-        <Button
-          mt="xl"
-          onClick={() => {
-            window.location.href = '/admin/pages/email-users';
-          }}
-        >
-          Email Users
-        </Button>
       </Box>
     </Box>
   );

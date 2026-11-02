@@ -1,6 +1,6 @@
 import { ActionContext, ActionRequest, ActionResponse } from 'adminjs';
 import { CreateUserDto } from '@shared/dtos/users/create-user.dto.js';
-import { API_URL } from '../../index.js';
+import { API_URL } from '../../config/api-url.js';
 
 export const createUserAction = async (
   request: ActionRequest,

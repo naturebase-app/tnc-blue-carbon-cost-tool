@@ -2,7 +2,7 @@ import { BaseAuthProvider, LoginHandlerOptions } from 'adminjs';
 import type { Response } from 'express';
 import { ROLES } from '@shared/entities/users/roles.enum.js';
 import { UserDto, UserWithAccessToken } from '@shared/dtos/users/user.dto.js';
-import { API_URL } from '../index.js';
+import { API_URL } from '../config/api-url.js';
 
 export class AuthProvider extends BaseAuthProvider {
   override async handleLogin(opts: LoginHandlerOptions, context?: any) {
