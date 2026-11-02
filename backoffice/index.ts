@@ -41,7 +41,7 @@ import { componentLoader, Components } from 'backoffice/components/index.js';
 import { ModelComponentSourceResource } from 'backoffice/resources/model-component-source/model-component-source.resource.js';
 import { EcosystemExtentResource } from 'backoffice/resources/ecosystem-extent/ecosystem-extent.resource.js';
 import path from 'path';
-import { Config } from 'backoffice/components/config/Config.js';
+import { API_URL } from 'backoffice/config/api-url.js';
 import { UserUploadResource } from 'backoffice/resources/users/user-upload.resource.js';
 import { User } from '@shared/entities/users/user.entity.js';
 import { ModelComponentsVersionEntityResource } from 'backoffice/resources/model-component-version-entity.resource.js';
@@ -52,7 +52,6 @@ AdminJS.registerAdapter({
 });
 
 const PORT = 1000;
-export const API_URL = process.env.API_URL || 'http://localhost:4000';
 const ROOT_PATH = '/admin';
 const authProvider = new AuthProvider();
 
@@ -149,13 +148,6 @@ const start = async () => {
           });
         },
       },
-      'email-users': {
-        icon: 'Mail',
-        component: Components.EmailUsers,
-        handler: async (_request: Request, response: Response) => {
-          response.json({ config: { apiUrl: API_URL } });
-        },
-      },
     },
     locale: {
       debug: false,
@@ -172,6 +164,11 @@ const start = async () => {
             // pages: 'Uploads',
           },
           resources: {
+            User: {
+              actions: {
+                emailUsers: 'Email Users',
+              },
+            },
             ProjectSize: {
               properties: {
                 countryCode: 'Country',

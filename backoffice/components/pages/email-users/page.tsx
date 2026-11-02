@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ApiClient } from 'adminjs';
+import { ApiClient, type ActionProps } from 'adminjs';
 import { Box, H2, Text } from '@adminjs/design-system';
 
 const adminApi = new ApiClient();
 
-const EmailUsers = () => {
+const EmailUsers = ({ resource, action }: ActionProps) => {
   const [emails, setEmails] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
@@ -14,21 +14,16 @@ const EmailUsers = () => {
 
     const loadEmails = async () => {
       try {
-        const pageResponse = await adminApi.getPage({
-          pageName: 'email-users',
+        const response = await adminApi.resourceAction({
+          resourceId: resource.id,
+          actionName: action.name,
         });
-        const pageData = pageResponse.data as { config: { apiUrl: string } };
-        const configuredApiUrl = pageData.config.apiUrl;
-        const response = await fetch(`${configuredApiUrl}/admin/users/emails`, {
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Unable to load user email addresses.');
+        const result = response.data as { emails?: string[]; error?: string };
+        if (result.error) {
+          throw new Error(result.error);
         }
-
-        const result = (await response.json()) as { data: string[] };
         if (!cancelled) {
-          setEmails(result.data);
+          setEmails(result.emails ?? []);
         }
       } catch {
         if (!cancelled) {
