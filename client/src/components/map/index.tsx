@@ -41,9 +41,9 @@ export default function Map({
     useState<Partial<ViewState> | null>(
       !initialViewState
         ? {
-          ...DEFAULT_VIEW_STATE,
-          ...viewState,
-        }
+            ...DEFAULT_VIEW_STATE,
+            ...viewState,
+          }
         : null,
     );
   const [isFlying, setFlying] = useState(false);
