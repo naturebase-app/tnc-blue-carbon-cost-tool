@@ -10,7 +10,7 @@ import { Response } from 'express';
 import { RolesGuard } from '@api/modules/auth/guards/roles.guard';
 import { RequiredRoles } from '@api/modules/auth/decorators/roles.decorator';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
-import { ControllerResponse } from '@api/types/controller-response.type';
+import type { ControllerResponse } from '@api/types/controller-response.type';
 import { adminContract } from '@shared/contracts/admin.contract';
 import { AuthenticationService } from '@api/modules/auth/authentication.service';
 import { ROLES } from '@shared/entities/users/roles.enum';
@@ -49,6 +49,17 @@ export class AdminController {
       return {
         status: HttpStatus.OK,
         body: { data: emails },
+      };
+    });
+  }
+
+  @TsRestHandler(adminContract.getUserStatistics)
+  async getUserStatistics(): Promise<ControllerResponse> {
+    return tsRestHandler(adminContract.getUserStatistics, async () => {
+      const statistics = await this.usersService.getUserStatistics();
+      return {
+        status: HttpStatus.OK,
+        body: { data: statistics },
       };
     });
   }

@@ -62,4 +62,21 @@ export class UsersService extends AppBaseService<
       return [trimmedEmail];
     });
   }
+
+  async getUserStatistics(): Promise<{
+    activeUsers: number;
+    usersCreatedLast90Days: number;
+  }> {
+    const [activeUsers, usersCreatedLast90Days] = await Promise.all([
+      this.userRepository.count({ where: { isActive: true } }),
+      this.userRepository
+        .createQueryBuilder('user')
+        .where(
+          "user.createdAt BETWEEN CURRENT_TIMESTAMP - INTERVAL '90 days' AND CURRENT_TIMESTAMP",
+        )
+        .getCount(),
+    ]);
+
+    return { activeUsers, usersCreatedLast90Days };
+  }
 }
