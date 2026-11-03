@@ -41,9 +41,9 @@ export default function Map({
     useState<Partial<ViewState> | null>(
       !initialViewState
         ? {
-            ...DEFAULT_VIEW_STATE,
-            ...viewState,
-          }
+          ...DEFAULT_VIEW_STATE,
+          ...viewState,
+        }
         : null,
     );
   const [isFlying, setFlying] = useState(false);
@@ -169,12 +169,18 @@ export default function Map({
     };
   }, [mapRef, mapboxProps]);
 
+  const mapboxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN;
+
+  if (!mapboxAccessToken) {
+    return <div className={cn("relative z-0 h-full w-full", className)} />;
+  }
+
   return (
     <div className={cn("relative z-0 h-full w-full", className)}>
       <ReactMapGL
         id={id}
         initialViewState={initialViewState}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_API_TOKEN}
+        mapboxAccessToken={mapboxAccessToken}
         onMove={handleMapMove}
         onLoad={handleMapLoad}
         mapStyle={MAPBOX_STYLE}

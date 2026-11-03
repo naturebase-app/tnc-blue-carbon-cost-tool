@@ -1,5 +1,69 @@
 # TNC Blue Carbon Cost Tool
 
+## Run locally
+
+For the local `staging` workflow, run the API, client, and backoffice in three
+separate terminals, with only Postgres and MinIO running in Docker.
+
+From the repository root, install dependencies once (and again after dependency
+changes):
+
+```sh
+pnpm install
+```
+
+Each time you start the local app, make sure you are on `staging` and start the
+supporting services:
+
+```sh
+git switch staging
+docker compose up -d database minio
+```
+
+The Compose database is available on host port `5434` (container port `5432`).
+Start each application in its own terminal, from the repository root:
+
+**Terminal 1 — API**
+
+```sh
+DB_PORT=5434 DB_SYNCHRONIZE=false pnpm api:dev
+```
+
+`DB_SYNCHRONIZE=false` prevents TypeORM from attempting to alter database
+columns used by existing views.
+
+**Terminal 2 — client**
+
+```sh
+pnpm client:dev
+```
+
+The client development environment should use `NEXTAUTH_URL=http://localhost:3000/auth/api`
+and `NEXT_PUBLIC_API_URL=http://localhost:4000`.
+
+**Terminal 3 — backoffice**
+
+```sh
+docker compose run --build --rm --service-ports \
+  -e API_URL=http://host.docker.internal:4000 \
+  backoffice pnpm --filter backoffice run start:dev
+```
+
+Open the apps at:
+
+- Client: <http://localhost:3000>
+- Backoffice: <http://localhost:1000/admin/login>
+- MinIO console: <http://localhost:9001>
+
+The Admin link in the local client opens the backoffice. The client and
+backoffice use the same account credentials, but require separate sign-ins.
+When finished, stop the application processes with `Ctrl+C`; stop Postgres and
+MinIO without removing their containers using:
+
+```sh
+docker compose stop database minio
+```
+
 ## Methodology
 
 ### Sources

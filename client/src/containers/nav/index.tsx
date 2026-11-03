@@ -34,6 +34,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
+const backofficeUrl =
+  process.env.NEXT_PUBLIC_BACKOFFICE_URL ??
+  (process.env.NODE_ENV === "development"
+    ? "http://localhost:1000/admin"
+    : "/admin");
+
 const navItems = {
   main: [
     {
@@ -62,7 +68,7 @@ const navItems = {
     },
     {
       title: "Admin",
-      url: "/admin",
+      url: backofficeUrl,
       icon: ServerCogIcon,
       match: (pathname: string) => pathname.startsWith("/admin"),
       isAdmin: true,

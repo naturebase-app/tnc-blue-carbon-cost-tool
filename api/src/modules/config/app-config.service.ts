@@ -25,7 +25,7 @@ export class ApiConfigService {
   constructor(
     private configService: ConfigService,
     private readonly jwtConfigHandler: JwtConfigHandler,
-  ) {}
+  ) { }
 
   /**
    * @note We could abstract this to a data layer access config specific class within database module, as well for other configs when the thing gets more complex.
@@ -34,6 +34,9 @@ export class ApiConfigService {
    * @note: Maybe it's a good idea to move the datasource config to shared folder, to be used potentially for a e2e test agent
    */
   getDatabaseConfig() {
+    const synchronize = this.configService.get('DB_SYNCHRONIZE');
+    const ssl = this.configService.get('DB_SSL');
+
     return {
       host: this.configService.getOrThrow('DB_HOST'),
       port: this.configService.getOrThrow('DB_PORT'),
@@ -41,8 +44,11 @@ export class ApiConfigService {
       password: this.configService.getOrThrow('DB_PASSWORD'),
       database: this.configService.getOrThrow('DB_NAME'),
       entities: COMMON_DATABASE_ENTITIES,
-      synchronize: !this.isProduction(),
-      ssl: this.isProduction()
+      synchronize:
+        synchronize === undefined
+          ? !this.isProduction()
+          : synchronize === 'true',
+      ssl: ssl === 'true' || (ssl === undefined && this.isProduction())
         ? { require: true, rejectUnauthorized: false }
         : false,
     };
