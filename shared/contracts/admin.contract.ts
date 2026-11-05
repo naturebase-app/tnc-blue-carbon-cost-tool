@@ -6,12 +6,42 @@ import { z } from "zod";
 // TODO: This is a scaffold. We need to define types for responses, zod schemas for body and query param validation etc.
 
 const contract = initContract();
+export type UserStatistics = {
+  activeUsers: number;
+  usersCreatedLast90Days: number;
+  savedCustomProjects: number;
+  customProjectsUpdatedLast90Days: number;
+};
+
+export const UserEmailCategorySchema = z.enum([
+  "all",
+  "active",
+  "saved-projects",
+]);
+export type UserEmailCategory = z.infer<typeof UserEmailCategorySchema>;
+
+export const UserEmailCategoriesQuerySchema = z.object({
+  categories: z
+    .string()
+    .transform((value) => (value ? value.split(",") : []))
+    .pipe(z.array(UserEmailCategorySchema))
+    .optional(),
+});
+
 export const adminContract = contract.router({
   listUserEmails: {
     method: "GET",
     path: "/admin/users/emails",
+    query: UserEmailCategoriesQuerySchema,
     responses: {
       200: contract.type<{ data: string[] }>(),
+    },
+  },
+  getUserStatistics: {
+    method: "GET",
+    path: "/admin/users/statistics",
+    responses: {
+      200: contract.type<{ data: UserStatistics }>(),
     },
   },
   addUser: {

@@ -43,11 +43,23 @@ and `NEXT_PUBLIC_API_URL=http://localhost:4000`.
 
 **Terminal 3 — backoffice**
 
+Build the backoffice image on first use and after dependency changes:
+
 ```sh
-docker compose run --build --rm --service-ports \
+docker compose build backoffice
+```
+
+Then start the backoffice:
+
+```sh
+docker compose run --rm --service-ports \
   -e API_URL=http://host.docker.internal:4000 \
   backoffice pnpm --filter backoffice run start:dev
 ```
+
+Backoffice, API, and shared TypeScript source files are mounted into the
+container and watched by nodemon, so code changes reload automatically without
+rebuilding or restarting the backoffice.
 
 Open the apps at:
 

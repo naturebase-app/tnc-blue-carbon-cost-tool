@@ -3,6 +3,10 @@ services:
     container_name: blue-carbon-cost-api
     environment:
       DB_HOST: database
+      DB_PORT: 5432
+      DB_SYNCHRONIZE: "false"
+      DB_SSL: "false"
+      S3_ENDPOINT: http://host.docker.internal:9000
     build:
       context: .
       dockerfile: api/Dockerfile
@@ -21,6 +25,16 @@ services:
     environment:
       DB_HOST: database
       NODE_ENV: development
+    env_file:
+      - ./shared/config/.env
+    volumes:
+      - ./backoffice:/app/backoffice
+      - ./api:/app/api
+      - ./shared:/app/shared
+      - /app/backoffice/node_modules
+      - /app/api/node_modules
+      - /app/shared/node_modules
+    command: ["pnpm", "--filter", "backoffice", "run", "start:dev"]
     build:
       context: .
       dockerfile: backoffice/Dockerfile
@@ -39,6 +53,7 @@ services:
         NEXT_PUBLIC_API_URL: "http://api:4000"
         NEXTAUTH_SECRET: "mysupersecret"
         NEXTAUTH_URL: "http://client:3000/auth/api"
+        NEXT_PUBLIC_MAPBOX_API_TOKEN: "${NEXT_PUBLIC_MAPBOX_API_TOKEN:-}"
     ports:
       - "3000:3000"
     networks:
@@ -68,12 +83,13 @@ services:
       POSTGRES_PASSWORD: blue-carbon-cost
       POSTGRES_DB: blc
     ports:
-      - "5432:5432"
+      - "5434:5432"
     networks:
       - 4-growth-docker-network
 
   minio:
-    image: minio/minio
+    image: cgr.dev/chainguard/minio:latest
+    user: "0:0"
     container_name: minio-dev
     ports:
       - "9000:9000"   # API

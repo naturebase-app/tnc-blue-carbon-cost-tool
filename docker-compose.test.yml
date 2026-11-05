@@ -1,6 +1,6 @@
 services:
   minio:
-    image: minio/minio
+    image: cgr.dev/chainguard/minio:latest
     container_name: minio-test
     ports:
       - "9000:9000"   # API

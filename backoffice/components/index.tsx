@@ -12,6 +12,10 @@ export const Components = {
     'EmailUsersAction',
     './pages/email-users/page',
   ),
+  UserAccountsList: componentLoader.add(
+    'UserAccountsList',
+    './pages/user-accounts-list/page',
+  ),
   Many2ManySources: componentLoader.add(
     'Many2ManySources',
     './molecules/many-2-many-sources',
