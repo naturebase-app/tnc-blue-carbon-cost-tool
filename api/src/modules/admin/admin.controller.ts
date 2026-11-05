@@ -17,6 +17,7 @@ import { ROLES } from '@shared/entities/users/roles.enum';
 import { JwtCookieAuthGuard } from '@api/modules/auth/guards/jwt-cookie-auth.guard';
 import { AdminExportService } from '@api/modules/admin/admin-export.service';
 import { UsersService } from '@api/modules/users/users.service';
+import { CustomProjectsService } from '@api/modules/custom-projects/custom-projects.service';
 
 @Controller()
 @UseGuards(JwtCookieAuthGuard, RolesGuard)
@@ -26,6 +27,7 @@ export class AdminController {
     private readonly auth: AuthenticationService,
     private readonly adminExport: AdminExportService,
     private readonly usersService: UsersService,
+    private readonly customProjectsService: CustomProjectsService,
   ) {}
 
   @Get('admin/export/xlsx')
@@ -44,8 +46,8 @@ export class AdminController {
 
   @TsRestHandler(adminContract.listUserEmails)
   async listUserEmails(): Promise<ControllerResponse> {
-    return tsRestHandler(adminContract.listUserEmails, async () => {
-      const emails = await this.usersService.listActiveUserEmails();
+    return tsRestHandler(adminContract.listUserEmails, async ({ query }) => {
+      const emails = await this.usersService.listUserEmails(query.categories);
       return {
         status: HttpStatus.OK,
         body: { data: emails },
@@ -56,10 +58,24 @@ export class AdminController {
   @TsRestHandler(adminContract.getUserStatistics)
   async getUserStatistics(): Promise<ControllerResponse> {
     return tsRestHandler(adminContract.getUserStatistics, async () => {
-      const statistics = await this.usersService.getUserStatistics();
+      const [
+        userStatistics,
+        savedCustomProjects,
+        customProjectsUpdatedLast90Days,
+      ] = await Promise.all([
+        this.usersService.getUserStatistics(),
+        this.customProjectsService.countSavedProjects(),
+        this.customProjectsService.countSavedProjectsUpdatedLast90Days(),
+      ]);
       return {
         status: HttpStatus.OK,
-        body: { data: statistics },
+        body: {
+          data: {
+            ...userStatistics,
+            savedCustomProjects,
+            customProjectsUpdatedLast90Days,
+          },
+        },
       };
     });
   }

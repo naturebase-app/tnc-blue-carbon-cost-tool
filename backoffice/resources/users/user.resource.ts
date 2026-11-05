@@ -35,6 +35,8 @@ export const UserResource: ResourceWithOptions = {
     actions: {
       list: {
         component: Components.UserAccountsList,
+        hideActionHeader: true,
+        showResourceActions: false,
       },
       userStatistics: {
         actionType: 'resource',

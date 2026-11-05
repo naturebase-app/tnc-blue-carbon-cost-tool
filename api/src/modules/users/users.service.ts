@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@shared/entities/users/user.entity';
+import type { UserEmailCategory } from '@shared/contracts/admin.contract';
 import { Repository } from 'typeorm';
 
 import { AppBaseService } from '@api/utils/app-base.service';
@@ -43,12 +44,40 @@ export class UsersService extends AppBaseService<
     return user.isActive;
   }
 
-  async listActiveUserEmails(): Promise<string[]> {
-    const users = await this.userRepository.find({
-      select: { email: true },
-      where: { isActive: true },
-      order: { email: 'ASC' },
-    });
+  async listUserEmails(categories?: UserEmailCategory[]): Promise<string[]> {
+    const selectedCategories = categories ?? ['active'];
+    if (selectedCategories.length === 0) {
+      return [];
+    }
+
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .select('user.email', 'email')
+      .distinct(true)
+      .orderBy('user.email', 'ASC');
+
+    if (!selectedCategories.includes('all')) {
+      const conditions: string[] = [];
+      const parameters: Record<string, boolean> = {};
+
+      if (selectedCategories.includes('active')) {
+        conditions.push('user.isActive = :isActive');
+        parameters.isActive = true;
+      }
+
+      if (selectedCategories.includes('saved-projects')) {
+        query.leftJoin('user.customProjects', 'customProject');
+        conditions.push('customProject.id IS NOT NULL');
+      }
+
+      if (conditions.length === 0) {
+        return [];
+      }
+
+      query.andWhere(`(${conditions.join(' OR ')})`, parameters);
+    }
+
+    const users = await query.getRawMany<{ email: string }>();
     const seenEmails = new Set<string>();
 
     return users.flatMap(({ email }) => {

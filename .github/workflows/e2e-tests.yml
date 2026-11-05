@@ -45,7 +45,7 @@ jobs:
             -p 9001:9001 \
             -e MINIO_ROOT_USER=testtest \
             -e MINIO_ROOT_PASSWORD=testtest \
-            minio/minio server /data --console-address ":9001"
+            cgr.dev/chainguard/minio:latest server /data --console-address ":9001"
 
       - name: Node setup
         uses: actions/setup-node@v4

@@ -116,6 +116,19 @@ export class CustomProjectsService extends AppBaseService<
     }
   }
 
+  async countSavedProjects(): Promise<number> {
+    return this.repo.count();
+  }
+
+  async countSavedProjectsUpdatedLast90Days(): Promise<number> {
+    return this.repo
+      .createQueryBuilder('customProject')
+      .where(
+        "customProject.updatedAt BETWEEN CURRENT_TIMESTAMP - INTERVAL '90 days' AND CURRENT_TIMESTAMP",
+      )
+      .getCount();
+  }
+
   async getActivityTypeDefaults(dto: GetActivityTypesDefaults) {
     return this.dataRepository.getActivityTypesDefaults(dto);
   }

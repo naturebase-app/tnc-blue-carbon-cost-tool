@@ -11,7 +11,7 @@
     "s3:dev": "docker-compose -f ../docker-compose.yml up -d minio",
     "s3:test": "docker-compose -f ../docker-compose.test.yml down minio && docker-compose -f ../docker-compose.test.yml up -d minio",
     "start": "nest start",
-    "start:dev": "pnpm s3:dev && nest start --watch",
+    "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "nest start",
     "typeorm": "NODE_OPTIONS='-r tsconfig-paths/register' typeorm-ts-node-commonjs -d src/data-source.ts",
