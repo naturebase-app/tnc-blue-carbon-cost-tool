@@ -64,6 +64,7 @@ export const UserResource: ResourceWithOptions = {
         actionType: 'resource',
         icon: 'Mail',
         component: Components.EmailUsersAction,
+        showResourceActions: false,
         handler: async (request, response, { currentAdmin }) => {
           if (!currentAdmin?.accessToken) {
             return { error: 'Admin authentication is required.' };

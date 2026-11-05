@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ApiClient, type ActionProps } from 'adminjs';
-import { Box, Button, CheckBox, H2, Label, Text } from '@adminjs/design-system';
+import { Box, Button, CheckBox, Label, Text } from '@adminjs/design-system';
 import type { UserEmailCategory } from '@shared/contracts/admin.contract.js';
 
 const adminApi = new ApiClient();
@@ -103,8 +103,9 @@ const EmailUsers = ({ resource, action }: ActionProps) => {
   return (
     <Box variant="grey">
       <Box variant="white">
-        <H2>Email Users</H2>
-        <Text mb="sm">Select one or more recipient categories:</Text>
+        <Text style={{ fontWeight: 'bold' }} mb="xl">
+          Select one or more recipient categories:
+        </Text>
         <Box flex flexWrap="wrap" alignItems="center" mb="lg">
           {RECIPIENT_CATEGORIES.map(({ value, label }) => {
             const id = `email-recipient-${value}`;

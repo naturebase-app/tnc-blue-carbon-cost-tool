@@ -1,6 +1,7 @@
 import { ComponentLoader } from 'adminjs';
 
 export const componentLoader = new ComponentLoader();
+componentLoader.override('ActionHeader', './action-header');
 
 export const Components = {
   Dashboard: componentLoader.add('Dashboard', './dashboard'),
