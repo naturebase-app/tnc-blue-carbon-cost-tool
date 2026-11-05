@@ -19,12 +19,13 @@ export const UserEmailCategorySchema = z.enum([
   "saved-projects",
 ]);
 export type UserEmailCategory = z.infer<typeof UserEmailCategorySchema>;
+export const UserEmailCategoriesSchema = z.array(UserEmailCategorySchema);
 
 export const UserEmailCategoriesQuerySchema = z.object({
   categories: z
     .string()
     .transform((value) => (value ? value.split(",") : []))
-    .pipe(z.array(UserEmailCategorySchema))
+    .pipe(UserEmailCategoriesSchema)
     .optional(),
 });
 

@@ -4,6 +4,7 @@ import { createUserAction } from './user.actions.js';
 import { GLOBAL_COMMON_PROPERTIES } from '../common/common.resources.js';
 import { Components } from 'backoffice/components/index.js';
 import { API_URL } from 'backoffice/config/api-url.js';
+import { UserEmailCategoriesSchema } from '@shared/contracts/admin.contract.js';
 import type { UserStatistics } from '@shared/contracts/admin.contract.js';
 
 export const UserResource: ResourceWithOptions = {
@@ -63,24 +64,41 @@ export const UserResource: ResourceWithOptions = {
         actionType: 'resource',
         icon: 'Mail',
         component: Components.EmailUsersAction,
-        handler: async (_request, response, { currentAdmin }) => {
+        handler: async (request, response, { currentAdmin }) => {
           if (!currentAdmin?.accessToken) {
             return { error: 'Admin authentication is required.' };
           }
 
           try {
-            const apiResponse = await fetch(`${API_URL}/admin/users/emails`, {
-              headers: {
-                Cookie: response.req.headers.cookie,
+            const requestedCategories = request.payload?.categories;
+            let categoriesQuery = '';
+            if (requestedCategories !== undefined) {
+              const parsedCategories =
+                UserEmailCategoriesSchema.safeParse(requestedCategories);
+              if (!parsedCategories.success) {
+                return { error: 'Invalid recipient category selection.' };
+              }
+              categoriesQuery = `?categories=${encodeURIComponent(
+                parsedCategories.data.join(','),
+              )}`;
+            }
+
+            const apiResponse = await fetch(
+              `${API_URL}/admin/users/emails${categoriesQuery}`,
+              {
+                headers: {
+                  Cookie: response.req.headers.cookie,
+                },
               },
-            });
+            );
             if (!apiResponse.ok) {
               return { error: 'Unable to load user email addresses.' };
             }
 
             const result = (await apiResponse.json()) as { data: string[] };
             return { emails: result.data };
-          } catch {
+          } catch (error) {
+            console.error('Error loading user email addresses.', error);
             return { error: 'Unable to load user email addresses.' };
           }
         },

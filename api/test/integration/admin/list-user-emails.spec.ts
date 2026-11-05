@@ -59,7 +59,7 @@ describe('Admin user data', () => {
   });
 
   test('returns selected email audiences as a deduplicated union', async () => {
-    const activeUser = await testManager.mocks().createUser({
+    await testManager.mocks().createUser({
       email: 'active@example.com',
       isActive: true,
     });
