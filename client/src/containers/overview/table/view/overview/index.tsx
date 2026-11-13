@@ -90,6 +90,9 @@ export function OverviewTable() {
     {
       query: {
         ...filtersToQueryParams(filters),
+        filter: {
+          priceType: [filters.priceType],
+        },
         fields: [
           "id",
           "capex",

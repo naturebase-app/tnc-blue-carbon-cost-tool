@@ -24,23 +24,30 @@ test.describe("Projects - Overview Table", () => {
         await testManager.close();
     });
 
-    test('The default price type is Market price and I can filter the price type of Projects', async () => {
+    test('The selected break-even price type filters the Projects Overview table', async () => {
         const china = await testManager.getDataSource().getRepository(Country).findOneOrFail({where: {name: 'China'}});
         const india = await testManager.getDataSource().getRepository(Country).findOneOrFail({where: {name: 'India'}});
         for (const priceType of Object.values(PROJECT_PRICE_TYPE)) {
             await testManager.mocks().createProject({countryCode: china.code, projectName: `${priceType} China Mangrove Conservation`, priceType});
             await testManager.mocks().createProject({countryCode: india.code, projectName: `${priceType} India Mangrove Conservation`, priceType});
         }
-        page.goto('http://localhost:3000/');
-        await page.waitForResponse('**/projects?**');
-        const firstRowCellsBeforeFilter = await page.locator(PROJECT_OVERVIEW_TABLE_LOCATOR).nth(0).locator('td').allTextContents();
-        expect(firstRowCellsBeforeFilter).toContain(`Market price China Mangrove Conservation`)
-        await page.locator('button').filter({ hasText: 'Market price' }).click();
-        await page.getByText('Opex breakeven').click();
-        const firstRowCellsAfterFilter = await page.locator(PROJECT_OVERVIEW_TABLE_LOCATOR).nth(0).locator('td').allTextContents();
-        expect(firstRowCellsAfterFilter).toContain(`Opex breakeven China Mangrove Conservation`);
-        const secondRowCellsAfterFilter = await page.locator(PROJECT_OVERVIEW_TABLE_LOCATOR).nth(1).locator('td').allTextContents();
-        expect(secondRowCellsAfterFilter).toContain(`Opex breakeven India Mangrove Conservation`);
+
+        const opexResponsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === '/projects');
+        await page.goto('http://localhost:3000/');
+        const opexResponse = await opexResponsePromise;
+        const opexProjects = (await opexResponse.json()).data as Project[];
+        expect(opexProjects).toHaveLength(2);
+        expect(opexProjects.every((project) => project.priceType === PROJECT_PRICE_TYPE.OPEX_BREAKEVEN)).toBe(true);
+        await expect(page.locator(PROJECT_OVERVIEW_TABLE_LOCATOR).nth(0)).toContainText(`${PROJECT_PRICE_TYPE.OPEX_BREAKEVEN} China Mangrove Conservation`);
+
+        const totalCostResponsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === '/projects');
+        await page.getByRole('combobox').first().click();
+        await page.getByRole('option', {name: PROJECT_PRICE_TYPE.TOTAL_COST_BREAKEVEN}).click();
+        const totalCostResponse = await totalCostResponsePromise;
+        const totalCostProjects = (await totalCostResponse.json()).data as Project[];
+        expect(totalCostProjects).toHaveLength(2);
+        expect(totalCostProjects.every((project) => project.priceType === PROJECT_PRICE_TYPE.TOTAL_COST_BREAKEVEN)).toBe(true);
+        await expect(page.locator(PROJECT_OVERVIEW_TABLE_LOCATOR).nth(0)).toContainText(`${PROJECT_PRICE_TYPE.TOTAL_COST_BREAKEVEN} China Mangrove Conservation`);
     });
 
     test('I can filter Projects by Country', async () => {
@@ -60,5 +67,4 @@ test.describe("Projects - Overview Table", () => {
 
     });
 });
-
 
